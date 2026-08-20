@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RefreshButton } from "@/components/admin/RefreshButton";
 import { getAllInsightsForAdmin } from "@/lib/insights-store";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { SetupNotice } from "@/components/admin/SetupNotice";
@@ -35,12 +36,15 @@ export default async function AdminInsightsPage() {
                 } published.`}
           </p>
         </div>
-        <Link
-          href="/admin/insights/new"
-          className="h-11 rounded-[0.625rem] bg-navy-600 px-5 text-[0.9375rem] leading-[2.75rem] font-medium text-white transition-colors hover:bg-navy-700"
-        >
-          Write a new post
-        </Link>
+        <div className="flex items-center gap-2">
+          <RefreshButton />
+          <Link
+            href="/admin/insights/new"
+            className="h-11 rounded-[0.625rem] bg-navy-600 px-5 text-[0.9375rem] leading-[2.75rem] font-medium text-white transition-colors hover:bg-navy-700"
+          >
+            Write a new post
+          </Link>
+        </div>
       </div>
 
       {!configured && <SetupNotice />}
@@ -57,70 +61,86 @@ export default async function AdminInsightsPage() {
       {configured && insights.length === 0 && <SeedButton />}
 
       {insights.length > 0 && (
-        <div className="overflow-hidden rounded-[var(--radius-tile)] border border-line bg-white">
-          <table className="w-full text-[0.875rem]">
-            <thead>
-              <tr className="border-b border-line text-[0.75rem] md:text-[0.6875rem] tracking-[0.08em] text-ink-3 uppercase">
-                <th className="px-5 py-3 text-left font-medium">Headline</th>
-                <th className="px-3 py-3 text-left font-medium">Category</th>
-                <th className="px-3 py-3 text-left font-medium">Status</th>
-                <th className="px-3 py-3 text-left font-medium">Published</th>
-                <th className="px-5 py-3 text-right font-medium">
-                  <span className="sr-only">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {insights.map((insight) => (
-                <tr key={insight.slug} className="border-b border-line last:border-0">
-                  <td className="max-w-[24rem] px-5 py-4">
-                    <Link
-                      href={`/admin/insights/${insight.slug}`}
-                      className="font-medium text-ink hover:text-navy-600"
-                    >
-                      {insight.title}
-                    </Link>
-                    <p className="mt-0.5 truncate font-mono text-[0.75rem] text-ink-3">
-                      /insights/{insight.slug}
-                    </p>
-                  </td>
-                  <td className="px-3 py-4 text-ink-2">{insight.category}</td>
-                  <td className="px-3 py-4">
-                    <span
-                      className={
-                        insight.status === "published"
-                          ? "rounded-full bg-positive/10 px-2.5 py-1 text-[0.75rem] font-medium text-positive"
-                          : "rounded-full bg-surface-2 px-2.5 py-1 text-[0.75rem] font-medium text-ink-3"
-                      }
-                    >
-                      {insight.status === "published" ? "Live" : "Draft"}
-                    </span>
-                  </td>
-                  <td className="px-3 py-4 tabular text-ink-2">{when(insight.publishedAt)}</td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center justify-end gap-3">
-                      {insight.status === "published" && (
-                        <Link
-                          href={`/insights/${insight.slug}`}
-                          target="_blank"
-                          className="text-[0.8125rem] text-ink-2 hover:text-navy-600"
-                        >
-                          View ↗
-                        </Link>
-                      )}
+        <div className="min-w-0 overflow-hidden rounded-[var(--radius-tile)] border border-line bg-white">
+          {/*
+            The table scrolls inside this box rather than pushing the page
+            sideways. Five columns do not fit a phone and squeezing them is
+            worse than sliding them — the headline column stays readable and
+            the rest is a swipe away.
+          */}
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[44rem] text-[0.875rem]">
+              <thead>
+                <tr className="border-b border-line text-[0.75rem] md:text-[0.6875rem] tracking-[0.08em] text-ink-3 uppercase">
+                  <th className="px-5 py-3 text-left font-medium">Headline</th>
+                  <th className="px-3 py-3 text-left font-medium">Category</th>
+                  <th className="px-3 py-3 text-left font-medium">Status</th>
+                  <th className="px-3 py-3 text-left font-medium">Published</th>
+                  <th className="px-5 py-3 text-right font-medium">
+                    <span className="sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {insights.map((insight) => (
+                  <tr
+                    key={insight.slug}
+                    className="border-b border-line last:border-0"
+                  >
+                    <td className="max-w-[24rem] px-5 py-4">
                       <Link
                         href={`/admin/insights/${insight.slug}`}
-                        className="text-[0.8125rem] text-navy-600 hover:underline"
+                        className="font-medium text-ink hover:text-navy-600"
                       >
-                        Edit
+                        {insight.title}
                       </Link>
-                      <DeleteButton slug={insight.slug} title={insight.title} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      <p className="mt-0.5 truncate font-mono text-[0.75rem] text-ink-3">
+                        /insights/{insight.slug}
+                      </p>
+                    </td>
+                    <td className="px-3 py-4 text-ink-2">{insight.category}</td>
+                    <td className="px-3 py-4">
+                      <span
+                        className={
+                          insight.status === "published"
+                            ? "rounded-full bg-positive/10 px-2.5 py-1 text-[0.75rem] font-medium text-positive"
+                            : "rounded-full bg-surface-2 px-2.5 py-1 text-[0.75rem] font-medium text-ink-3"
+                        }
+                      >
+                        {insight.status === "published" ? "Live" : "Draft"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-4 tabular text-ink-2">
+                      {when(insight.publishedAt)}
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center justify-end gap-3">
+                        {insight.status === "published" && (
+                          <Link
+                            href={`/insights/${insight.slug}`}
+                            target="_blank"
+                            className="flex min-h-11 items-center text-[0.8125rem] text-ink-2 hover:text-navy-600 md:min-h-0"
+                          >
+                            View ↗
+                          </Link>
+                        )}
+                        <Link
+                          href={`/admin/insights/${insight.slug}`}
+                          className="flex min-h-11 items-center text-[0.8125rem] text-navy-600 hover:underline md:min-h-0"
+                        >
+                          Edit
+                        </Link>
+                        <DeleteButton
+                          slug={insight.slug}
+                          title={insight.title}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

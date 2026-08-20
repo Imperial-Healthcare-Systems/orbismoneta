@@ -21,7 +21,7 @@ export function DeleteButton({ slug, title }: { slug: string; title: string }) {
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="text-[0.8125rem] text-ink-3 transition-colors hover:text-critical"
+        className="flex min-h-11 items-center text-[0.8125rem] text-ink-3 transition-colors hover:text-critical md:min-h-0"
       >
         Delete
       </button>
@@ -30,13 +30,17 @@ export function DeleteButton({ slug, title }: { slug: string; title: string }) {
 
   return (
     <span className="flex items-center gap-2">
-      <span className="text-[0.75rem] text-ink-2">Delete &ldquo;{title.slice(0, 30)}…&rdquo;?</span>
+      <span className="text-[0.75rem] text-ink-2">
+        Delete &ldquo;{title.slice(0, 30)}…&rdquo;?
+      </span>
       <button
         type="button"
         disabled={busy}
         onClick={async () => {
           setBusy(true);
-          const response = await fetch(`/api/admin/insights/${slug}`, { method: "DELETE" });
+          const response = await fetch(`/api/admin/insights/${slug}`, {
+            method: "DELETE",
+          });
           if (!response.ok) {
             setBusy(false);
             setConfirming(false);

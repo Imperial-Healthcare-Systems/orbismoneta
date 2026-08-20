@@ -20,7 +20,7 @@ export function SignOutButton() {
         router.refresh();
         router.push("/admin/login");
       }}
-      className="rounded-full border border-line px-3.5 py-1.5 text-[0.875rem] text-ink-2 transition-colors hover:border-line-strong hover:text-ink disabled:opacity-50"
+      className="flex min-h-11 items-center rounded-full border border-line px-3.5 py-1.5 text-[0.875rem] text-ink-2 transition-colors hover:border-line-strong hover:text-ink disabled:opacity-50 md:min-h-0"
     >
       {busy ? "Signing out…" : "Sign out"}
     </button>
